@@ -9,6 +9,8 @@ export default function Home() {
       const tokenValue = "Token-" + Math.floor(Math.random() * 1000 + 1);
       Cookies.set("token", tokenValue, {
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+        sameSite: "none",
+        secure: true,
       });
       setCookie(tokenValue);
     } else {
