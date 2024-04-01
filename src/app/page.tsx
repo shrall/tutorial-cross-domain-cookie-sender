@@ -1,21 +1,25 @@
 "use client";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [cookie, setCookie] = useState("");
   useEffect(() => {
-    if (Cookies.get("token") === undefined) {
+    if (!document.cookie.includes("token")) {
       const tokenValue = "Token-" + Math.floor(Math.random() * 1000 + 1);
-      Cookies.set("token", tokenValue, {
-        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
-        sameSite: "none",
-        secure: true,
-      });
+      const cookieData = `token=${tokenValue}; domain=${process.env.NEXT_PUBLIC_COOKIE_DOMAIN}; path=/`;
+      window.postMessage(
+        { type: "setCookie", cookie: cookieData },
+        process.env.NEXT_PUBLIC_COOKIE_DOMAIN || "*"
+      );
       setCookie(tokenValue);
     } else {
-      const tokenValue = Cookies.get("token");
-      if (tokenValue) setCookie(tokenValue);
+      const tokenValue = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token"));
+      if (tokenValue) {
+        const token = tokenValue.split("=")[1];
+        setCookie(token);
+      }
     }
   }, []);
 
